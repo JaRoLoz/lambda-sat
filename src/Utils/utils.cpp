@@ -48,3 +48,11 @@ namespace Utils
         return 1 / y;
     }
 }
+
+// namespace Threading
+// {
+//     void AppendTask(Threading::TaskParams params)
+//     {
+//         xTaskCreatePinnedToCore(params.coreFunction, params.taskName.c_str(), uxTaskGetStackHighWaterMark(params.coreFunction));
+//     }
+// }

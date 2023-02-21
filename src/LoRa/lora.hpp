@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <Hash.h>
-#include "utils/utils.hpp"
+#include "../Utils/utils.hpp"
 #include "../Debug/debug.hpp"
 #include "../Config.hpp"
 

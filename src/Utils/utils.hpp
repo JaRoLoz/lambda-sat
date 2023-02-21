@@ -10,4 +10,16 @@ namespace Utils
     float f_Sqrt(float number);
 }
 
+// namespace Threading
+// {
+//     typedef struct TaskParams
+//     {
+//         String taskName;
+//         unsigned int taskPriority;
+//         unsigned int taskCore;
+//         TaskFunction_t coreFunction;
+//     };
+//     void AppendTask(TaskParams params);
+// }
+
 #endif

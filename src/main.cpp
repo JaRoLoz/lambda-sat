@@ -1,33 +1,43 @@
-//#include "../lib/Eventually/src/Eventually.h"
+#include <Arduino.h>
+#include <esp_wifi.h>
 #include "../lib/Vector/src/Vector.h"
 #include "EventLoop/loop.hpp"
+#include "EventLoop/Events/events.hpp"
 #include "LoRa/lora.hpp"
-#include "Async/async.hpp"
 #include "Debug/debug.hpp"
 #include "Config.hpp"
 
-LoRa *loraTransmitter = new LoRa(LORA_RX, LORA_TX);
 EventLoop *MainThread = new EventLoop();
 
 void setup()
 {
+    esp_wifi_set_mode(WIFI_MODE_NULL);
+    esp_wifi_stop();
     Serial.begin(115200);
     Debug::LOG("Initializing...");
-    // loraTransmitter->Initialize();
-    // Debug::LOG("Lora started!");
-    // loraTransmitter->TransmitMessage(LoRa::Transmitions::diagnostics, "holis");
-    AsyncTimeoutTask *task = new AsyncTimeoutTask(1000, reinterpret_cast<void*>(*[] () {
-        Debug::LOG("Executed!!!");
-    }));
-    MainThread->addEventListener(new Event(reinterpret_cast<void*>(*[] () {
-        Debug::LOG("Task ran!!!");
-    })));
 }
 
+uint16_t lastTime = 0;
 void loop () 
-{ 
-    
+{
+    lastTime = MainThread->checkLoopTime();
+    if (lastTime > 29) 
+        Debug::LOG("[!] Thread hitch warning: last thread time was " + static_cast<String>(lastTime) + "ms");
+    MainThread->loopTick();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // void loop()
 // {

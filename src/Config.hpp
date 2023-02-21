@@ -6,10 +6,10 @@
 #endif
 
 #ifndef LORA_RX
-#define LORA_RX D5
+#define LORA_RX 5
 #endif
 #ifndef LORA_TX
-#define LORA_TX D6
+#define LORA_TX 6
 #endif
 
 #ifndef MAX_EVENT_NUMBER

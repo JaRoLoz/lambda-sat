@@ -11,7 +11,6 @@ void LoRa::Initialize()
     serialPort.print("LAMBDA_BOOT_SIGNAL\n");
     while (true)
     {
-        esp_yield();
         yield(); // darle tiempo al callstack de tcp a hacer sus tareas
         if (serialPort.available())
             if (serialPort.readString().indexOf("THETA_BOOT_RECIEVED\n") != -1)
