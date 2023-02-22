@@ -1,4 +1,5 @@
 #include "events.hpp"
+#include "../loop.hpp"
 #include "../../Debug/debug.hpp"
 
 Event::Event(void *callback)
@@ -33,8 +34,11 @@ void Event::canBeTriggered(EventLoop *loop)
 
 void DelayEvent::canBeTriggered(EventLoop *loop)
 {
-    if ((millis() - this->m_startTime) >= this->m_delay)
+    if ((millis() - this->m_startTime) >= this->m_delay) {
         reinterpret_cast<void (*)(EventLoop*, unsigned int, Event*)>(this->_callback)(loop, this->index, this);
+        delete this;
+        loop->removeEvent(this->index);
+    }
 }
 
 void IntervalEvent::canBeTriggered(EventLoop *loop)

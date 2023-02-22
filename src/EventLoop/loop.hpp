@@ -13,6 +13,7 @@ public:
     EventLoop() : eventStack(stackArray) {};
     void addEventListener(Event *event);
     void loopTick();
+    void removeEvent(unsigned int index);
     uint16_t checkLoopTime();
     Vector<Event*> eventStack;
 private:

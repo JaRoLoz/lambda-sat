@@ -14,6 +14,13 @@ void EventLoop::loopTick()
         eventStack.at(i)->canBeTriggered(this);
 }
 
+void EventLoop::removeEvent(unsigned int index) 
+{
+    for (size_t i = index + 1; i < this->eventStack.size(); i++)
+        eventStack.at(i)->index--;
+    this->eventStack.remove(index);
+}
+
 uint16_t EventLoop::checkLoopTime() 
 {
     uint16_t _delay = millis() - this->m_lastTime;

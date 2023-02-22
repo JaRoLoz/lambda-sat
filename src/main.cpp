@@ -7,6 +7,7 @@
 #include "Debug/debug.hpp"
 #include "Config.hpp"
 
+// LoRa *loraTransmitter = new LoRa(LORA_RX, LORA_TX);
 EventLoop *MainThread = new EventLoop();
 
 void setup()
@@ -15,6 +16,14 @@ void setup()
     esp_wifi_stop();
     Serial.begin(115200);
     Debug::LOG("Initializing...");
+    // loraTransmitter->Initialize();
+    // Debug::LOG("Lora started!");
+    // loraTransmitter->TransmitMessage(LoRa::Transmitions::diagnostics, "holis");
+    Debug::LOG_VAR(static_cast<uint64_t>(xPortGetFreeHeapSize()), "Free heap size");
+    MainThread->addEventListener(new IntervalEvent(500, reinterpret_cast<void*>(*[] () 
+    {
+        MainThread->addEventListener(new DelayEvent(1000, reinterpret_cast<void*>(*[] (){})));
+    })));
 }
 
 uint16_t lastTime = 0;
