@@ -1,69 +1,60 @@
 #include "lora.hpp"
 
-LoRa::LoRa(unsigned int rx, unsigned int tx) : serialPort(rx, tx)
+LoRaModule::LoRaModule(uint8_t sck, uint8_t miso, uint8_t mosi, uint8_t rst, uint8_t nss, uint8_t dio0, EventLoop *mainThread, EventLoop *secondThread)
 {
-    carrierCode = Utils::GenerateRandomString(4);
+    SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_CS);  // puta vida tete
+    LoRa.setPins(LORA_CS, LORA_RST, LORA_DIO0);          // puta vida tete x2
+    this->m_mainThread = mainThread;
+    this->m_secondThread = secondThread;
 }
 
-void LoRa::Initialize()
+bool LoRaModule::Initialize(uint16_t frequency, uint16_t bandwidth)
 {
-    serialPort.begin(57600);
-    serialPort.print("LAMBDA_BOOT_SIGNAL\n");
-    while (true)
+    if (!LoRa.begin(frequency)) 
     {
-        yield(); // darle tiempo al callstack de tcp a hacer sus tareas
-        if (serialPort.available())
-            if (serialPort.readString().indexOf("THETA_BOOT_RECIEVED\n") != -1)
-            {
-                serialPort.print("LAMBDA_CARRIER:" + carrierCode + '\n');
-                break;
-            }
-    }
-
-    while (true)
-    {
-        yield(); // darle tiempo al callstack de tcp a hacer sus tareas
-        if (serialPort.available())
-            if (serialPort.readString().indexOf("THETA_CARRIER_RECEIVED\n") != -1)
-                break;
-    }
-}
-
-boolean LoRa::TransmitMessage(Transmitions transmitionType, String data)
-{
-    if (data.length() > 256 - 9)
-    { // 256 bytes es el máximo de LoRa, y 9 son los reservados para el protocolo
-        Debug::LOG("Transmition message size limit reached!");
-        Debug::LOG_VAR(data.c_str(), "Transmition data");
+        Debug::LOG("Error initializing LoRa module");
         return false;
     }
-    if (!serialPort.availableForWrite())
-        return false;
-    uint32_t _messageIndex = messageIndex++;
-    serialPort.print(this->carrierCode + transmitionType + Utils::IntToBase36(_messageIndex) + data + '\n');                // envia los datos a la estación de tierra
-    serialPort.print(this->carrierCode + Transmitions::errorcheck + Utils::IntToBase36(_messageIndex) + sha1(data) + '\n'); // envia hash de los datos para comprobar paridad
+
+    LoRa.setSyncWord(LORA_SYNCWORD);
+    LoRa.setSignalBandwidth(bandwidth);
+    LoRa.setSpreadingFactor(12);
+    LoRa.setCodingRate4(5);
+    LoRa.setPreambleLength(8);
+
+    this->m_secondThread->addEventListener(new IntervalEvent(0, reinterpret_cast<void*>(&LoRaModule::ParseLoraPacket))); // el que tenga miedo a morir que no nazca
+
     return true;
 }
 
-void LoRa::HandleSerial(String data)
+void LoRaModule::RouteMethod(unsigned int route, void *method)
 {
-    String Instruction;
-    if (data.indexOf(':') != -1)
-    {
-        for (int i = 0; i < data.indexOf(':'); i++)
-            Instruction += data[i];
-        data.remove(0, data.indexOf(':'));
-    }
-    else
-    {
-        Instruction = data;
-    }
+    this->m_methods[route] = method;
+}
 
-    if (Instruction == "_RESEND")
-    {
-        Debug::LOG((String) "RESEND " + data + this->carrierCode);
-    }
-    else if (Instruction == "_NSQMAS")
-    {
-    }
+void LoRaModule::ParseLoraPacket()
+{
+    unsigned int packetSize = LoRa.parsePacket();
+    if (packetSize < 1) 
+        return;
+    
+    byte _buffer[LoRa.available()];
+    for (size_t i = 0; i < LoRa.available(); i++)
+        _buffer[i] = LoRa.read();
+    unsigned int *buffer = reinterpret_cast<unsigned int*>(_buffer);
+    Debug::LOG(static_cast<String>(buffer[0]));
+    // int state = this->m_module->receive(buffer, sizeof(buffer));
+    // if (state != RADIOLIB_ERR_NONE)
+    //     return;
+
+    // if (this->m_module->getPacketLength() < 1)
+    //     return;
+    
+    // uint index = (uint)buffer[0];
+    // if (index > LORA_RX_MESSAGES)  // por si algún pussy lo intenta
+    //     return;
+
+    // void* method = this->m_methods[index];
+    // if (method)
+    //     ((void (*)(void)) method)(); // el que tenga miedo a morir que no nazca
 }

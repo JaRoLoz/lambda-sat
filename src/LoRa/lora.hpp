@@ -1,34 +1,34 @@
-#ifndef LORA_H
-#define LORA_H
+#ifndef LORA__H
+#define LORA__H
 
 #include <Arduino.h>
-#include <SoftwareSerial.h>
-#include <Hash.h>
+#include <SPI.h>
+#include <LoRa.h>
 #include "../Utils/utils.hpp"
 #include "../Debug/debug.hpp"
+#include "../EventLoop/loop.hpp"
+#include "../EventLoop/Events/events.hpp"
 #include "../Config.hpp"
 
-class LoRa
+class LoRaModule
 {
 public:
-    enum Transmitions
+    enum Frequencies
     {
-        errorcheck = 0,
-        diagnostics = 1,
-        gyroscope = 2,
-        accelerometer = 3,
-        magnetometer = 4,
-        rawSensorData = 5
+        EU = 867,
+        US = 912,
+        AU = 920,
+        AS = 923
     };
-    SoftwareSerial serialPort;
-    String carrierCode;
-    LoRa(unsigned int rx, unsigned int tx);
-    void Initialize();
-    boolean TransmitMessage(Transmitions transmitionType, String data);
-    void HandleSerial(String data);
+    LoRaModule(uint8_t sck, uint8_t miso, uint8_t mosi, uint8_t rst, uint8_t nss, uint8_t dio0, EventLoop *mainThread, EventLoop *secondThread);
+    bool Initialize(uint16_t frequency, uint16_t bandwidth);
+    void RouteMethod(unsigned int route, void *method);
+    static void ParseLoraPacket();
 
-private:
-    uint32_t messageIndex = 0;
+protected:
+    EventLoop *m_mainThread;
+    EventLoop *m_secondThread;
+    void *m_methods[LORA_RX_MESSAGES];
 };
 
 #endif

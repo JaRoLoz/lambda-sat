@@ -45,7 +45,10 @@ void IntervalEvent::canBeTriggered(EventLoop *loop)
 {
     if ((millis() - this->m_startTime) >= this->m_delay)
     {
-        reinterpret_cast<void (*)(EventLoop*, unsigned int, Event*)>(this->_callback)(loop, this->index, this);
+        if (this->m_argument != NULL)
+            reinterpret_cast<void (*)(EventLoop*, unsigned int, Event*, void*)>(this->_callback)(loop, this->index, this, m_argument);
+        else 
+            reinterpret_cast<void (*)(EventLoop*, unsigned int, Event*)>(this->_callback)(loop, this->index, this);
         this->m_startTime = millis();
     }
 }

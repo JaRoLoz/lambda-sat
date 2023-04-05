@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-debug",
+            "command": "wsl",
+            "args": [
+                "bash",
+                "./debug/debug.sh"
+            ],
+            "type": "process"
+        },
+        {
+            "label": "start-qemu",
+            "command": "powershell",
+            "args": [
+                "-c",
+                "\"Start-Process",
+                "pwsh.exe",
+                "-ArgumentList",
+                "'-c",
+                "wsl",
+                "/bin/qemu-xtensa/bin/qemu-system-xtensa",
+                "-s",
+                "-nographic",
+                "-M",
+                "esp32",
+                "-m",
+                "4",
+                "-drive",
+                "file=./debug/test_image.bin,if=mtd,format=raw",
+                "-nic",
+                "user,model=open_eth'\""
+            ],
+            "dependsOn": [
+                "build-debug"
+            ],
+            "type": "process"
+        }
+    ]
+}

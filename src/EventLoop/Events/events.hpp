@@ -2,6 +2,7 @@
 
 #ifndef EVENTS_H
 #define EVENTS_H
+#include "../../LoRa/lora.hpp"
 
 class EventLoop;
 
@@ -30,7 +31,10 @@ class IntervalEvent : public DelayEvent
 {
 public:
     IntervalEvent(uint32_t timeout, void* callback);
+    IntervalEvent(uint32_t timeout, void* callback, void* argument);
     void canBeTriggered(EventLoop *loop);
+private:
+    void* m_argument;
 };
 
 #endif

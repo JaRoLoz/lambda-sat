@@ -4,6 +4,15 @@ const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 namespace Utils
 {
+    void PrintLambdaLogo()
+    {
+        Serial.println("      \\\\\\        _                     _         _       ");
+        Serial.println("       \\\\\\      | |                   | |       | |      ");
+        Serial.println("       /\\\\\\     | |     __ _ _ __ ___ | |__   __| | __ _ ");
+        Serial.println("      ///\\\\\\    | |    / _` | '_ ` _ \\| '_ \\ / _` |/ _` |");
+        Serial.println("     ///  \\\\\\   | |___| (_| | | | | | | |_) | (_| | (_| |");
+        Serial.println("    ///    \\\\\\  |______\\__,_|_| |_| |_|_.__/ \\__,_|\\__,_|");
+    }
     String GenerateRandomString(int length)
     {
         String randomString = "";
@@ -48,11 +57,3 @@ namespace Utils
         return 1 / y;
     }
 }
-
-// namespace Threading
-// {
-//     void AppendTask(Threading::TaskParams params)
-//     {
-//         xTaskCreatePinnedToCore(params.coreFunction, params.taskName.c_str(), uxTaskGetStackHighWaterMark(params.coreFunction));
-//     }
-// }
