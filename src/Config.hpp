@@ -55,14 +55,12 @@
 #define MPU6050_ADDR 0x68
 #endif
 
-#ifndef BMP280_ADDR
-// SD0 = GND -> 0x76
-// SD0 = VCC -> 0x77
-#define BMP280_ADDR 0x76
+#ifndef BMP180_ADDR
+#define BMP180_ADDR 0x77
 #endif
 
-#ifndef BMP280_ID
-#define BMP280_ID 0x58
+#ifndef SEA_LEVEL_PRESSURE
+#define SEA_LEVEL_PRESSURE 102525.0F
 #endif
 
 #endif
